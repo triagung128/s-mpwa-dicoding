@@ -21,3 +21,19 @@ self.addEventListener("install", event => {
       })
    );
 });
+
+self.addEventListener("fetch", event => {
+   event.respondWith(
+      caches.match(event.request).then(response => {
+         console.log("ServiceWorker: Menarik data: ", event.request.url);
+
+         if (response) {
+            console.log("ServiceWorker: Gunakan aset dari cache: ", response.url);
+            return response;
+         }
+
+         console.log("ServiceWorker: Memuat aset dari server: ", event.request.url);
+         return fetch(event.request);
+      })
+   );
+});
