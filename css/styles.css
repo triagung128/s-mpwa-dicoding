@@ -1,0 +1,54 @@
+html, body {
+   margin:0;
+   padding:0;
+   height:100%;
+}
+
+#body-content {
+   position:relative;
+   min-height: 100%;
+}
+
+.jumbotron {
+   background-image: url(../assets/jumbotron.jpg);
+   position: relative;
+   padding: 100px 0;
+   background-repeat: no-repeat;
+   background-size: cover;
+   background-position: center;
+}
+
+.jumbotron::before {
+   content: '';
+   display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+   top: 0;
+   background: rgba(0, 0, 0, 0.5);
+}
+
+.wrapper {
+   position: relative;
+   color: #fff;
+}
+
+.mt-12 {
+   margin-top: 12px;
+}
+
+.mt-20 {
+   margin-top: 20px;
+}
+
+.list-content {
+   padding: 40px 0;
+}
+
+.form-group {
+   margin: 40px 0;
+}
+
+.card {
+   height: 624px;
+}
