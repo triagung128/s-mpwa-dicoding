@@ -36,25 +36,7 @@ function getTeams(){
       caches.match(teams_url).then(response => {
          if (response){
             response.json().then(data => {
-               let html = "";
-               data.teams.forEach(team => {
-                  html += `
-                     <div class="col s12 m6 l6">
-                        <div class="card">
-                           <div class="card-content">
-                              <div class="center"><img width="128" height="128" src="${team.crestUrl}"></div>
-                              <div class="center flow-text">${team.name}</div>
-                              <div class="center">${team.venue}</div>
-                           </div>
-                           <div class="card-action right-align">
-                              <a class="waves-effect waves-light btn-small teal" onclick="insertTeamListener(${team.id})"><i class="material-icons left">favorite</i> Add To Favorite</a>
-                           </div>
-                        </div>
-                     </div>
-                  `;
-               });
-               document.getElementById("teams").innerHTML = html;
-               hidePreloader();
+               showTeams(data);
             });
          }
       });
@@ -65,25 +47,7 @@ function getTeams(){
       .then(status)
       .then(json)
       .then(data => {
-         let html = "";
-         data.teams.forEach(team => {
-            html += `
-               <div class="col s12 m6 l6">
-                  <div class="card">
-                     <div class="card-content">
-                        <div class="center"><img width="128" height="128" src="${team.crestUrl}"></div>
-                        <div class="center flow-text">${team.name}</div>
-                        <div class="center">${team.venue}</div>
-                     </div>
-                     <div class="card-action right-align">
-                        <a class="waves-effect waves-light btn-small teal" onclick="insertTeamListener(${team.id})"><i class="material-icons left">favorite</i> Add To Favorite</a>
-                     </div>
-                  </div>
-               </div>
-            `;
-         });
-         document.getElementById("teams").innerHTML = html;
-         hidePreloader();
+         showTeams(data);
       })
       .catch(error);
 }
@@ -94,54 +58,7 @@ function getStandings(){
       caches.match(standings_url).then(response => {
          if (response){
             response.json().then(data => {
-               let html = "";
-               data.standings.forEach(standing => {
-                  let teamRow = "";
-                  standing.table.forEach(result => {
-                     teamRow += `
-                        <tr>
-                           <td class="center">${result.position}</td>
-                           <td class="valign-wrapper"><img class="responsive-img" width="24" height="24" src="${result.team.crestUrl}"> &nbsp; &nbsp; ${result.team.name}</td>
-                           <td class="center">${result.playedGames}</td>
-                           <td class="center">${result.won}</td>
-                           <td class="center">${result.draw}</td>
-                           <td class="center">${result.lost}</td>
-                           <td class="center">${result.goalsFor}</td>
-                           <td class="center">${result.goalsAgainst}</td>
-                           <td class="center">${result.goalDifference}</td>
-                           <td class="center">${result.points}</td>
-                        </tr>
-                     `;
-                  });
-
-                  html += `
-                     <div class="col s12 m12">
-                        <div class="card">
-                           <div class="card-content">
-                              <table class="responsive-table striped">
-                              <thead>
-                                 <tr>
-                                    <th class="center">Position</th>
-                                    <th>Team</th>
-                                    <th class="center">Played</th>
-                                    <th class="center">Won</th>
-                                    <th class="center">Draw</th>
-                                    <th class="center">Lost</th>
-                                    <th class="center">GF</th>
-                                    <th class="center">GA</th>
-                                    <th class="center">GD</th>
-                                    <th class="center">Points</th>
-                                 </tr>
-                              </thead>
-                              <tbody>` + teamRow + `</tbody>
-                              </table>
-                           </div>
-                        </div>
-                     </div>
-                  `;
-               });
-               document.getElementById("standings").innerHTML = html;
-               hidePreloader();
+               showStandings(data);
             });
          }
       });
@@ -152,56 +69,84 @@ function getStandings(){
       .then(status)
       .then(json)
       .then(data => {
-         let html = "";
-         data.standings.forEach(standing => {
-            let teamRow = "";
-            standing.table.forEach(result => {
-               teamRow += `
-                  <tr>
-                     <td class="center">${result.position}</td>
-                     <td class="valign-wrapper"><img class="responsive-img" width="24" height="24" src="${result.team.crestUrl}"> &nbsp; &nbsp; ${result.team.name}</td>
-                     <td class="center">${result.playedGames}</td>
-                     <td class="center">${result.won}</td>
-                     <td class="center">${result.draw}</td>
-                     <td class="center">${result.lost}</td>
-                     <td class="center">${result.goalsFor}</td>
-                     <td class="center">${result.goalsAgainst}</td>
-                     <td class="center">${result.goalDifference}</td>
-                     <td class="center">${result.points}</td>
-                  </tr>
-               `;
-            });
-
-            html += `
-               <div class="col s12 m12">
-                  <div class="card">
-                     <div class="card-content">
-                        <table class="responsive-table striped">
-                        <thead>
-                           <tr>
-                              <th class="center">Position</th>
-                              <th>Team</th>
-                              <th class="center">Played</th>
-                              <th class="center">Won</th>
-                              <th class="center">Draw</th>
-                              <th class="center">Lost</th>
-                              <th class="center">GF</th>
-                              <th class="center">GA</th>
-                              <th class="center">GD</th>
-                              <th class="center">Points</th>
-                           </tr>
-                        </thead>
-                        <tbody>` + teamRow + `</tbody>
-                        </table>
-                     </div>
-                  </div>
-               </div>
-            `;
-         });
-         document.getElementById("standings").innerHTML = html;
-         hidePreloader();
+         showStandings(data);
       })
       .catch(error);
+}
+
+// Fungsi untuk menampilkan tampilan teams
+function showTeams(data){
+   let html = "";
+   data.teams.forEach(team => {
+      html += `
+         <div class="col s12 m6 l6">
+            <div class="card">
+               <div class="card-content">
+                  <div class="center"><img width="128" height="128" src="${team.crestUrl}"></div>
+                  <div class="center flow-text">${team.name}</div>
+                  <div class="center">${team.venue}</div>
+               </div>
+               <div class="card-action right-align">
+                  <a class="waves-effect waves-light btn-small teal" onclick="insertTeamListener(${team.id})"><i class="material-icons left">favorite</i> Add To Favorite</a>
+               </div>
+            </div>
+         </div>
+      `;
+   });
+   document.getElementById("teams").innerHTML = html;
+   hidePreloader();
+}
+
+// Fungsi menampilkan tampilan untuk standings (klasemen sementara)
+function showStandings(data){
+   let html = "";
+   data.standings.forEach(standing => {
+      let teamRow = "";
+      standing.table.forEach(result => {
+         teamRow += `
+            <tr>
+               <td class="center">${result.position}</td>
+               <td class="valign-wrapper"><img class="responsive-img" width="24" height="24" src="${result.team.crestUrl}"> &nbsp; &nbsp; ${result.team.name}</td>
+               <td class="center">${result.playedGames}</td>
+               <td class="center">${result.won}</td>
+               <td class="center">${result.draw}</td>
+               <td class="center">${result.lost}</td>
+               <td class="center">${result.goalsFor}</td>
+               <td class="center">${result.goalsAgainst}</td>
+               <td class="center">${result.goalDifference}</td>
+               <td class="center">${result.points}</td>
+            </tr>
+         `;
+      });
+
+      html += `
+         <div class="col s12 m12">
+            <div class="card">
+               <div class="card-content">
+                  <table class="responsive-table striped">
+                  <thead>
+                     <tr>
+                        <th class="center">Position</th>
+                        <th>Team</th>
+                        <th class="center">Played</th>
+                        <th class="center">Won</th>
+                        <th class="center">Draw</th>
+                        <th class="center">Lost</th>
+                        <th class="center">GF</th>
+                        <th class="center">GA</th>
+                        <th class="center">GD</th>
+                        <th class="center">Points</th>
+                     </tr>
+                  </thead>
+                  <tbody>` + teamRow + `</tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+      `;
+   });
+   document.getElementById("standings").innerHTML = html;
+   hidePreloader();
 }
 
 // Fungsi untuk menampilkan indikator loading
