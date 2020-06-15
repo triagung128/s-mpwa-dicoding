@@ -3,12 +3,13 @@ const urlsToCache = [
    "/",
    "/index.html",
    "/nav.html",
-   "/pages/clubs.html",
+   "/pages/teams.html",
    "/pages/standings.html",
    "/css/materialize.min.css",
    "/js/materialize.min.js",
    "/js/main.js",
-   "/js/nav.js"
+   "/js/nav.js",
+   "js/api.js"
 ];
 
 self.addEventListener("install", event => {
@@ -23,17 +24,21 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener("fetch", event => {
-   event.respondWith(
-      caches.match(event.request).then(response => {
-         console.log("ServiceWorker: Menarik data: ", event.request.url);
-
-         if (response) {
-            console.log("ServiceWorker: Gunakan aset dari cache: ", response.url);
-            return response;
-         }
-
-         console.log("ServiceWorker: Memuat aset dari server: ", event.request.url);
-         return fetch(event.request);
-      })
-   );
+   const base_url = "https://api.football-data.org/v2/";
+   if (event.request.url.indexOf(base_url) > -1) {
+      event.respondWith(
+         caches.open(CACHE_NAME).then(cache => {
+            return fetch(event.request).then(response => {
+               cache.put(event.request.url, response.clone());
+               return response;
+            })
+         })
+      );
+   } else {
+      event.respondWith(
+         caches.match(event.request).then(response => {
+            return response || fetch(event.request);
+         })
+      )
+   }
 });

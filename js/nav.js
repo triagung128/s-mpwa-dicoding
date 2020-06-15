@@ -34,20 +34,25 @@ document.addEventListener("DOMContentLoaded", function(){
    }
 
    let page = window.location.hash.substr(1);
-   if (page == "") {
-      page = "clubs";
+   if (page == ""){
+      page = "teams";
    }
    loadPage(page);
 
    // Fungsi untuk menampilkan halaman konten
-   function loadPage(page) {
+   function loadPage(page){
       const xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function () {
-         if (this.readyState == 4) {
+      xhttp.onreadystatechange = function (){
+         if (this.readyState == 4){
             const content = document.querySelector("#body-content");
-            if (this.status == 200) {
+            if (this.status == 200){
                content.innerHTML = xhttp.responseText;
-            } else if (this.status == 404) {
+               if (page == "teams"){
+                  getTeams();
+               } else if (page == "standings"){
+                  getStandings();
+               }
+            } else if (this.status == 404){
                content.innerHTML = "<p>Halaman tidak ditemukan.</p>";
             } else {
                content.innerHTML = "<p>Halaman tidak dapat diakese.</p>";
