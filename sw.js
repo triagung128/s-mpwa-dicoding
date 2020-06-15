@@ -1,4 +1,4 @@
-const CACHE_NAME = "bundesliga-app-v1";
+const CACHE_NAME = "bundesliga-pwa-v1";
 const urlsToCache = [
    "/",
    "/index.html",
