@@ -2,8 +2,8 @@ const BASE_URL = "https://api.football-data.org/v2/";
 const LEAGUE_ID = 2002;
 const API_KEY = "9d806601c2d5461d890d88b6178673a7";
 
-const teams_url = `${BASE_URL}competitions/${LEAGUE_ID}/teams`;
-const standings_url = `${BASE_URL}competitions/${LEAGUE_ID}/standings?standingType=TOTAL`;
+const ENDPOINT_TEAMS = `${BASE_URL}competitions/${LEAGUE_ID}/teams`;
+const ENDPOINT_STANDINGS = `${BASE_URL}competitions/${LEAGUE_ID}/standings?standingType=TOTAL`;
 
 function fetchApi(url){
    return fetch(url, {
@@ -30,12 +30,16 @@ function error(error){
    console.log("Error : " + error);
 }
 
+// Variabel untuk menampung data teams
+let teamData;
+
 // Fungsi untuk mendapatkan data teams dari api.football-data.org
 function getTeams(){
    if ("caches" in window){
-      caches.match(teams_url).then(response => {
+      caches.match(ENDPOINT_TEAMS).then(response => {
          if (response){
             response.json().then(data => {
+               teamData = data;
                showTeams(data);
             });
          }
@@ -43,39 +47,18 @@ function getTeams(){
    }
 
    showPreloader();
-   fetchApi(teams_url)
+   fetchApi(ENDPOINT_TEAMS)
       .then(status)
       .then(json)
       .then(data => {
+         teamData = data;
          showTeams(data);
       })
       .catch(error);
 }
 
-// Fungsi untuk mendapatkan data standings dari api.football-data.org
-function getStandings(){
-   if ("caches" in window){
-      caches.match(standings_url).then(response => {
-         if (response){
-            response.json().then(data => {
-               showStandings(data);
-            });
-         }
-      });
-   }
-
-   showPreloader();
-   fetchApi(standings_url)
-      .then(status)
-      .then(json)
-      .then(data => {
-         showStandings(data);
-      })
-      .catch(error);
-}
-
 // Fungsi untuk menampilkan tampilan teams
-function showTeams(data){
+function showTeams(data) {
    let html = "";
    data.teams.forEach(team => {
       html += `
@@ -87,7 +70,7 @@ function showTeams(data){
                   <div class="center">${team.venue}</div>
                </div>
                <div class="card-action right-align">
-                  <a class="waves-effect waves-light btn-small teal" onclick="insertTeamListener(${team.id})"><i class="material-icons left">favorite</i> Add To Favorite</a>
+                  <a class="waves-effect waves-light btn-small teal" onclick="saveFavTeamListener(${team.id})"><i class="material-icons left">favorite</i> Add To Favorite</a>
                </div>
             </div>
          </div>
@@ -95,6 +78,28 @@ function showTeams(data){
    });
    document.getElementById("teams").innerHTML = html;
    hidePreloader();
+}
+
+// Fungsi untuk mendapatkan data standings dari api.football-data.org
+function getStandings(){
+   if ("caches" in window){
+      caches.match(ENDPOINT_STANDINGS).then(response => {
+         if (response){
+            response.json().then(data => {
+               showStandings(data);
+            });
+         }
+      });
+   }
+
+   showPreloader();
+   fetchApi(ENDPOINT_STANDINGS)
+      .then(status)
+      .then(json)
+      .then(data => {
+         showStandings(data);
+      })
+      .catch(error);
 }
 
 // Fungsi menampilkan tampilan untuk standings (klasemen sementara)
@@ -147,6 +152,59 @@ function showStandings(data){
    });
    document.getElementById("standings").innerHTML = html;
    hidePreloader();
+}
+
+// Fungsi untuk mendapatkan data favorite teams dari indexed db
+function getFavTeams() {
+   showPreloader();
+   dbGetAllTeam().then(teams => {
+      showFavTeams(teams);
+   });
+}
+
+// Fungsi untuk menampilkan tampilan favorite teams
+function showFavTeams(data) {
+   let html = "";
+   data.forEach(team => {
+      html += `
+         <div class="col s12 m6 l6">
+            <div class="card">
+               <div class="card-content">
+                  <div class="center"><img width="128" height="128" src="${team.crestUrl}"></div>
+                  <div class="center flow-text">${team.name}</div>
+                  <div class="center">${team.venue}</div>
+               </div>
+               <div class="card-action right-align">
+                  <a class="waves-effect waves-light btn-small red" onclick="deleteFavTeamListener(${team.id})"><i class="material-icons left">delete</i> Delete</a>
+               </div>
+            </div>
+         </div>
+      `;
+   });
+   if (data.length == 0) {
+      html += `<div class="card-panel teal lighten-2"><h6 class="center-align white-text">No Favorite Team Found!</6></div>`;
+   }
+   document.getElementById("fav-teams").innerHTML = html;
+   hidePreloader();
+}
+
+// Fungsi untuk listener onclick pada button save favorite team
+function saveFavTeamListener(teamId){
+   const team = teamData.teams.filter(data => data.id == teamId)[0];
+   dbInsertTeam(team).then(() => {
+      M.toast({ html: `${team.name} successfully saved!` });
+   });
+}
+
+// Fungsi untuk listener onclick pada button delete favorite team
+function deleteFavTeamListener(teamId){
+   let c = confirm("Delete this team?");
+   if (c == true) {
+      dbDeleteTeam(teamId).then(() => {
+         M.toast({ html: `Team has been deleted!` });
+         getFavTeams();
+      })
+   }
 }
 
 // Fungsi untuk menampilkan indikator loading

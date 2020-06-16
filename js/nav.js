@@ -51,6 +51,8 @@ document.addEventListener("DOMContentLoaded", function(){
                   getTeams();
                } else if (page == "standings"){
                   getStandings();
+               } else if (page == "favorite_teams"){
+                  getFavTeams();
                }
             } else if (this.status == 404){
                content.innerHTML = "<p>Halaman tidak ditemukan.</p>";
