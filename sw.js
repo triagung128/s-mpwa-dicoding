@@ -5,11 +5,14 @@ const urlsToCache = [
    "/nav.html",
    "/pages/teams.html",
    "/pages/standings.html",
+   "/pages/favorite_teams.html",
    "/css/materialize.min.css",
    "/js/materialize.min.js",
    "/js/main.js",
    "/js/nav.js",
-   "js/api.js"
+   "/js/api.js",
+   "/js/idb.js",
+   "/js/db.js"
 ];
 
 self.addEventListener("install", event => {
