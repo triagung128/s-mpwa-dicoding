@@ -23,6 +23,21 @@ self.addEventListener("install", event => {
    );
 });
 
+self.addEventListener("activate", event => {
+   event.waitUntil(
+      caches.keys().then(cacheNames => {
+         return Promise.all(
+            cacheNames.map(cacheName => {
+               if (cacheName != CACHE_NAME) {
+                  console.log("ServiceWorker: cache " + cacheName + " dihapus");
+                  return caches.delete(cacheName);
+               }
+            })
+         )
+      })
+   );
+});
+
 self.addEventListener("fetch", event => {
    const base_url = "https://api.football-data.org/v2/";
    if (event.request.url.indexOf(base_url) > -1) {
