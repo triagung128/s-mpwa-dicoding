@@ -111,7 +111,7 @@ function showStandings(data){
          teamRow += `
             <tr>
                <td class="center">${result.position}</td>
-               <td class="valign-wrapper"><img class="responsive-img" width="24" height="24" src="${result.team.crestUrl}"> &nbsp; &nbsp; ${result.team.name}</td>
+               <td class="valign-wrapper"><img class="responsive-img" alt="logo_teams" width="24" height="24" src="${result.team.crestUrl}"> &nbsp; &nbsp; ${result.team.name}</td>
                <td class="center">${result.playedGames}</td>
                <td class="center">${result.won}</td>
                <td class="center">${result.draw}</td>
