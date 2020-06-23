@@ -8,6 +8,7 @@ if (workbox) {
       { url: "/", revision: "1" },
       { url: "/index.html", revision: "1" },
       { url: "/nav.html", revision: "1" },
+      { url: "/img/logo.png", revision: "1" },
       { url: "/pages/teams.html", revision: "1" },
       { url: "/pages/standings.html", revision: "1" },
       { url: "/pages/favorite_teams.html", revision: "1" },
