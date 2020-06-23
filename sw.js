@@ -21,7 +21,7 @@ if (workbox) {
       { url: "/js/db.js", revision: "1" }
    ]);
 
-   // Routing workbox ke api.football-data.org
+   // Routing workbox untuk menyimpan cache dari data api.football-data.org
    workbox.routing.registerRoute(
       new RegExp("https://api.football-data.org/v2/"),
       workbox.strategies.staleWhileRevalidate({
@@ -30,12 +30,53 @@ if (workbox) {
                statuses: [200]
             }),
             new workbox.expiration.Plugin({
-               maxAgeSecond: 60 * 60 * 24 * 365,
+               maxAgeSeconds: 60 * 60 * 24 * 365,
                maxEntries: 30
             })
          ]
       })
    );
+   
+   // Routing workbox untuk menyimpan cache dari data google fonts
+   worbox.routing.registerRoute(
+      /^https:\/\/fonts\.gstatic\.com/,
+      workbox.strategies.cacheFirst({
+         cacheName: "google-fonts-webfonts",
+         plugins: [
+            new workbox.cacheableResponse.Plugin({
+               statuses: [0, 200]
+            }),
+            new workbox.expiration.Plugin({
+               maxAgeSeconds: 60 * 60 * 24 * 365,
+               maxEntries: 30
+            })
+         ]
+      })
+   );
+   
+   // Routing di workbox untuk menyimpan cache file images
+   workbox.routing.registerRoute(
+      /\.(?:png|gif|jpg|jpeg|svg)$/,
+      workbox.strategies.cacheFirst({
+         cacheName: "images-cache",
+         plugins: [
+            new workbox.cacheableResponse.Plugin({
+               statuses: [200]
+            }),
+            new workbox.expiration.Plugin({
+               maxAgeSeconds: 60 * 60 * 24 * 30,
+               maxEntries: 30
+            })
+         ]
+      })
+   );
+
+   // Routing di workbox untuk menyimpan cache folder pages
+   workbox.routing.registerRoute(
+      new RegExp("/pages/"),
+      workbox.strategies.staleWhileRevalidate()
+   );
+
 } else {
    console.log("Workbox gagal dimuat");
 }
