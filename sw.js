@@ -1,47 +1,29 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js');
 
-const CACHE_NAME = "bundesliga-pwa-v1";
-const urlsToCache = [
-   "/",
-   "/index.html",
-   "/nav.html",
-   "/pages/teams.html",
-   "/pages/standings.html",
-   "/pages/favorite_teams.html",
-   "/css/materialize.min.css",
-   "/js/materialize.min.js",
-   "/js/main.js",
-   "/js/nav.js",
-   "/js/api.js",
-   "/js/idb.js",
-   "/js/db.js"
-];
+if (workbox) {
+   console.log("Workbox berhasil dimuat");
 
-self.addEventListener("install", event => {
-   console.log("ServiceWorker: Menginstall...");
+   // Precaching App Shell di Workbox
+   const urlsToCache = [
+      { url: "/", revision: "1" },
+      { url: "/index.html", revision: "1" },
+      { url: "/nav.html", revision: "1" },
+      { url: "/pages/teams.html", revision: "1" },
+      { url: "/pages/standings.html", revision: "1" },
+      { url: "/pages/favorite_teams.html", revision: "1" },
+      { url: "/css/materialize.min.css", revision: "1" },
+      { url: "/js/materialize.min.js", revision: "1" },
+      { url: "/js/main.js", revision: "1" },
+      { url: "/js/nav.js", revision: "1" },
+      { url: "/js/api.js", revision: "1" },
+      { url: "/js/idb.js", revision: "1" },
+      { url: "/js/db.js", revision: "1" }
+   ];
+   workbox.precaching.precacheAndRoute(urlsToCache);
 
-   event.waitUntil(
-      caches.open(CACHE_NAME).then(cache => {
-         console.log("ServiceWorker: Membuka cache...");
-         return cache.addAll(urlsToCache);
-      })
-   );
-});
-
-self.addEventListener("activate", event => {
-   event.waitUntil(
-      caches.keys().then(cacheNames => {
-         return Promise.all(
-            cacheNames.map(cacheName => {
-               if (cacheName != CACHE_NAME) {
-                  console.log("ServiceWorker: cache " + cacheName + " dihapus");
-                  return caches.delete(cacheName);
-               }
-            })
-         )
-      })
-   );
-});
+} else {
+   console.log("Workbox gagal dimuat");
+}
 
 self.addEventListener("fetch", event => {
    const base_url = "https://api.football-data.org/v2/";
