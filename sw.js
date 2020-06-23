@@ -4,7 +4,7 @@ if (workbox) {
    console.log("Workbox berhasil dimuat");
 
    // Precaching App Shell di Workbox
-   const urlsToCache = [
+   workbox.precaching.precacheAndRoute([
       { url: "/", revision: "1" },
       { url: "/index.html", revision: "1" },
       { url: "/nav.html", revision: "1" },
@@ -18,32 +18,26 @@ if (workbox) {
       { url: "/js/api.js", revision: "1" },
       { url: "/js/idb.js", revision: "1" },
       { url: "/js/db.js", revision: "1" }
-   ];
-   workbox.precaching.precacheAndRoute(urlsToCache);
+   ]);
 
+   // Routing workbox ke api.football-data.org
+   workbox.routing.registerRoute(
+      new RegExp("https://api.football-data.org/v2/"),
+      workbox.strategies.staleWhileRevalidate({
+         plugins: [
+            new workbox.cacheableResponse.Plugin({
+               statuses: [200]
+            }),
+            new workbox.expiration.Plugin({
+               maxAgeSecond: 60 * 60 * 24 * 365,
+               maxEntries: 30
+            })
+         ]
+      })
+   );
 } else {
    console.log("Workbox gagal dimuat");
 }
-
-self.addEventListener("fetch", event => {
-   const base_url = "https://api.football-data.org/v2/";
-   if (event.request.url.indexOf(base_url) > -1) {
-      event.respondWith(
-         caches.open(CACHE_NAME).then(cache => {
-            return fetch(event.request).then(response => {
-               cache.put(event.request.url, response.clone());
-               return response;
-            })
-         })
-      );
-   } else {
-      event.respondWith(
-         caches.match(event.request, {'ignoreSearch': true}).then(response => {
-            return response || fetch(event.request);
-         })
-      )
-   }
-});
 
 self.addEventListener("push", event => {
    let body;
