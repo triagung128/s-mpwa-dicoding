@@ -1,0 +1,2 @@
+firebase hosting
+url : https://bundesliga-pwa-f2d71.web.app/
